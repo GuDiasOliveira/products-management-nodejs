@@ -43,7 +43,11 @@ const Product = sequelize.define('product', {
   },
 });
 
-Product.belongsTo(Category);
+Product.belongsTo(Category, {
+  foreignKey: {
+    allowNull: false,
+  },
+});
 
 module.exports = async function() {
   await sequelize.sync();
