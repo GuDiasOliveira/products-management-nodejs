@@ -3,15 +3,20 @@ var router = express.Router();
 const routeValidator = require('express-route-validator');
 
 
+/**
+ * @api {post} /products Create product
+ * @apiName CreateProduct
+ * @apiGroup Product
+ *
+ * @apiSuccess {Object} created product
+ * @apiError (400) {Object} FieldsRequired you must pass all required fields
+ */
 router.post('/', routeValidator.validate({
   body: {
     name: { isRequired: true },
     description: { isRequired: true },
     value: { isRequired: true, isFloat: true },
     categoryId: { isRequired: true, isInt: { min: 1 } },
-  },
-  params: {
-    id: { isRequired: true, isInt: { min: 1 } }
   }
 }), (req, res, next) => {
   const product = req.body;
@@ -26,6 +31,13 @@ router.post('/', routeValidator.validate({
     .catch(next);
 });
 
+/**
+ * @api {get} /products Get all products
+ * @apiName GetProducts
+ * @apiGroup Product
+ *
+ * @apiSuccess {Object[]} all products
+ */
 router.get('/', (req, res, next) => {
   const Product = req.app.locals.db.models.Product;
   const Category = req.app.locals.db.models.Category;
@@ -34,6 +46,16 @@ router.get('/', (req, res, next) => {
     .catch(next);
 });
 
+/**
+ * @api {get} /products/:id Get a product
+ * @apiName GetProduct
+ * @apiGroup Product
+ * 
+ * @apiParam {Number} id Product unique ID.
+ *
+ * @apiSuccess {Object} the product
+ * @apiError (400) {Object} FieldsRequired you must pass all required fields and params
+ */
 router.get('/:id', routeValidator.validate({
   params: {
     id: { isRequired: true, isInt: { min: 1 } }
@@ -62,6 +84,16 @@ const interest = {
   'Móveis': 0.01,
 };
 
+/**
+ * @api {get} /products/:id/payment Get a product payment value
+ * @apiName GetPayment
+ * @apiGroup Product
+ * 
+ * @apiParam {Number} id Product unique ID from which to get the payment value.
+ *
+ * @apiSuccess {Object} the payment value
+ * @apiError (400) {Object} FieldsRequired you must pass all required fields and params
+ */
 router.get('/:id/payment', routeValidator.validate({
   params: {
     id: { isRequired: true, isInt: { min: 1 } }
@@ -91,6 +123,14 @@ router.get('/:id/payment', routeValidator.validate({
   }
 });
 
+/**
+ * @api {patch} /categories/:id Update a product
+ * @apiName UpdateProduct
+ * @apiGroup Product
+ * 
+ * @apiParam {Number} id Product unique ID that will be updated.
+ * @apiError (400) {Object} FieldsRequired you must pass all required fields and params
+ */
 router.patch('/:id', routeValidator.validate({
   params: {
     id: { isRequired: true, isInt: { min: 1 } }
@@ -111,6 +151,14 @@ router.patch('/:id', routeValidator.validate({
     .catch(next);
 });
 
+/**
+ * @api {delete} /categories/:id Delete a product
+ * @apiName DeleteProduct
+ * @apiGroup Product
+ * 
+ * @apiParam {Number} id Product unique ID that will be deleted.
+ * @apiError (400) {Object} FieldsRequired you must pass all required fields and params
+ */
 router.delete('/:id', routeValidator.validate({
   params: {
     id: { isRequired: true, isInt: { min: 1 } }

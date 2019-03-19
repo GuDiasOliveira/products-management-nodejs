@@ -3,6 +3,14 @@ var router = express.Router();
 const routeValidator = require('express-route-validator');
 
 
+/**
+ * @api {post} /categories Create category
+ * @apiName CreateCategory
+ * @apiGroup Category
+ *
+ * @apiSuccess {Object} created category
+ * @apiError (400) {Object} FieldsRequired you must pass all required fields
+ */
 router.post('/', routeValidator.validate({
   body: {
     name: { isRequired: true }
@@ -20,6 +28,16 @@ router.post('/', routeValidator.validate({
     .catch(next);
 });
 
+/**
+ * @api {post} /categories/:id/products Create product for a category
+ * @apiName CreateCategoryProduct
+ * @apiGroup Category
+ * 
+ * @apiParam {Number} id Category unique ID for which the product will be created.
+ *
+ * @apiSuccess {Object} created product
+ * @apiError (400) {Object} FieldsRequired you must pass all required fields and params
+ */
 router.post('/:id/products', routeValidator.validate({
   body: {
     name: { isRequired: true },
@@ -44,6 +62,13 @@ router.post('/:id/products', routeValidator.validate({
     .catch(next);
 });
 
+/**
+ * @api {get} /categories Get all categories
+ * @apiName GetCategories
+ * @apiGroup Category
+ *
+ * @apiSuccess {Object[]} all categories
+ */
 router.get('/', (req, res, next) => {
   const Category = req.app.locals.db.models.Category;
   Category.findAll()
@@ -51,6 +76,16 @@ router.get('/', (req, res, next) => {
     .catch(next);
 });
 
+/**
+ * @api {get} /categories/:id Get a category
+ * @apiName GetCategory
+ * @apiGroup Category
+ * 
+ * @apiParam {Number} id Category unique ID.
+ *
+ * @apiSuccess {Object} the category
+ * @apiError (400) {Object} FieldsRequired you must pass all required fields and params
+ */
 router.get('/:id', routeValidator.validate({
   params: {
     id: { isRequired: true, isInt: { min: 1 } }
@@ -72,6 +107,16 @@ router.get('/:id', routeValidator.validate({
   }).catch(next);
 });
 
+/**
+ * @api {get} /categories/:id/products Get all products from a category
+ * @apiName GetCategoryProducts
+ * @apiGroup Category
+ * 
+ * @apiParam {Number} id Category unique ID whose products will be gotten.
+ *
+ * @apiSuccess {Object[]} all category products
+ * @apiError (400) {Object} FieldsRequired you must pass all required fields and params
+ */
 router.get('/:id/products', routeValidator.validate({
   params: {
     id: { isRequired: true, isInt: { min: 1 } }
@@ -83,6 +128,14 @@ router.get('/:id/products', routeValidator.validate({
     .catch(next);
 });
 
+/**
+ * @api {put} /categories/:id Update a category
+ * @apiName UpdateCategory
+ * @apiGroup Category
+ * 
+ * @apiParam {Number} id Category unique ID that will be updated.
+ * @apiError (400) {Object} FieldsRequired you must pass all required fields and params
+ */
 router.put('/:id', routeValidator.validate({
   params: {
     id: { isRequired: true, isInt: { min: 1 } }
@@ -103,6 +156,14 @@ router.put('/:id', routeValidator.validate({
     .catch(next);
 });
 
+/**
+ * @api {delete} /categories/:id Delete a category
+ * @apiName DeleteCategory
+ * @apiGroup Category
+ * 
+ * @apiParam {Number} id Category unique ID that will be deleted.
+ * @apiError (400) {Object} FieldsRequired you must pass all required fields and params
+ */
 router.delete('/:id', routeValidator.validate({
   params: {
     id: { isRequired: true, isInt: { min: 1 } }
