@@ -19,12 +19,22 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use((req, res, next) => {
+  if (app.locals.db) {
+    next();
+  } else {
+    app.once('database-sync', next);
+  }
+});
+
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+app.use('/categories', categoriesRouter);
+
 database().then(db => {
   app.locals.db = db;
-  app.use('/', indexRouter);
-  app.use('/users', usersRouter);
-  app.use('/categories', categoriesRouter);
-  console.log('API routes ready!');
+  app.emit('database-sync');
+  console.log('App ready!');
 }).catch(err => {
   console.error('Failed to setup database');
   console.error(err);
