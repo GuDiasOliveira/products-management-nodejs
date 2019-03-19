@@ -41,6 +41,34 @@ router.get('/:id', (req, res, next) => {
   }).catch(next);
 });
 
+const interest = {
+  'Informática': 0.05,
+  'Automotivo': 0.025,
+  'Móveis': 0.01,
+};
+
+router.get('/:id/payment', async (req, res, next) => {
+  try {
+    const Product = req.app.locals.db.models.Product;
+    const Category = req.app.locals.db.models.Category;
+    const id = +req.params.id;
+    // Getting product and category
+    const product = await Product.findByPk(id);
+    const category = await Category.findByPk(product.categoryId);
+    const catName = category.name;
+    // Getting payment params
+    const i = interest[catName] || 0;
+    const pv = product.value;
+    const n = +req.query.n;
+    // Calculating
+    const payment = pv * i / (1 - Math.pow(1 + i, -n));
+    // Send result
+    res.json({ payment });
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.patch('/:id', (req, res, next) => {
   const product = req.body;
   // Ignore these fields
