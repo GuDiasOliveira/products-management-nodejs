@@ -21,6 +21,29 @@ describe('CRUD Category', () => {
       .expect(200);
   });
 
+  it('create product', async () => {
+    // Creating category
+    let category = givenCategory();
+    let response = await request(app)
+      .post('/categories')
+      .send(category)
+      .expect(200);
+    category = response.body;
+    // Creating product
+    let product = givenProduct();
+    response = await request(app)
+      .post(`/categories/${category.id}/products`)
+      .send(product)
+      .expect(200);
+    product = response.body;
+    // Checking creation
+    response = await request(app)
+      .get(`/products/${product.id}`)
+      .expect(200);
+    // Checking category id
+    expect(response.body.categoryId).equal(category.id, 'Correct category id');
+  });
+
   it('get products', async () => {
     // Creating categories
     let category1 = givenCategory();
