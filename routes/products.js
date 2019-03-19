@@ -1,8 +1,19 @@
 var express = require('express');
 var router = express.Router();
+const routeValidator = require('express-route-validator');
 
 
-router.post('/', (req, res, next) => {
+router.post('/', routeValidator.validate({
+  body: {
+    name: { isRequired: true },
+    description: { isRequired: true },
+    value: { isRequired: true, isFloat: true },
+    categoryId: { isRequired: true, isInt: { min: 1 } },
+  },
+  params: {
+    id: { isRequired: true, isInt: { min: 1 } }
+  }
+}), (req, res, next) => {
   const product = req.body;
   // Ignore these fields
   delete product.id;
@@ -23,7 +34,11 @@ router.get('/', (req, res, next) => {
     .catch(next);
 });
 
-router.get('/:id', (req, res, next) => {
+router.get('/:id', routeValidator.validate({
+  params: {
+    id: { isRequired: true, isInt: { min: 1 } }
+  }
+}), (req, res, next) => {
   const Product = req.app.locals.db.models.Product;
   const Category = req.app.locals.db.models.Category;
   const id = +req.params.id;
@@ -47,7 +62,14 @@ const interest = {
   'Móveis': 0.01,
 };
 
-router.get('/:id/payment', async (req, res, next) => {
+router.get('/:id/payment', routeValidator.validate({
+  params: {
+    id: { isRequired: true, isInt: { min: 1 } }
+  },
+  query: {
+    n: { isRequired: true, isInt: { min: 1 } }
+  }
+}), async (req, res, next) => {
   try {
     const Product = req.app.locals.db.models.Product;
     const Category = req.app.locals.db.models.Category;
@@ -69,7 +91,11 @@ router.get('/:id/payment', async (req, res, next) => {
   }
 });
 
-router.patch('/:id', (req, res, next) => {
+router.patch('/:id', routeValidator.validate({
+  params: {
+    id: { isRequired: true, isInt: { min: 1 } }
+  }
+}), (req, res, next) => {
   const product = req.body;
   // Ignore these fields
   delete product.id;
@@ -85,7 +111,11 @@ router.patch('/:id', (req, res, next) => {
     .catch(next);
 });
 
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', routeValidator.validate({
+  params: {
+    id: { isRequired: true, isInt: { min: 1 } }
+  }
+}), (req, res, next) => {
   const Product = req.app.locals.db.models.Product;
   const id = +req.params.id;
   const where = { id };

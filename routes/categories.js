@@ -1,8 +1,13 @@
 var express = require('express');
 var router = express.Router();
+const routeValidator = require('express-route-validator');
 
 
-router.post('/', (req, res, next) => {
+router.post('/', routeValidator.validate({
+  body: {
+    name: { isRequired: true }
+  }
+}), (req, res, next) => {
   const category = req.body;
   // Ignore these fields
   delete category.id;
@@ -15,7 +20,16 @@ router.post('/', (req, res, next) => {
     .catch(next);
 });
 
-router.post('/:id/products', (req, res, next) => {
+router.post('/:id/products', routeValidator.validate({
+  body: {
+    name: { isRequired: true },
+    description: { isRequired: true },
+    value: { isRequired: true, isFloat: true }
+  },
+  params: {
+    id: { isRequired: true, isInt: { min: 1 } }
+  }
+}), (req, res, next) => {
   const product = req.body;
   // Ignore these fields
   delete product.id;
@@ -37,7 +51,11 @@ router.get('/', (req, res, next) => {
     .catch(next);
 });
 
-router.get('/:id', (req, res, next) => {
+router.get('/:id', routeValidator.validate({
+  params: {
+    id: { isRequired: true, isInt: { min: 1 } }
+  }
+}), (req, res, next) => {
   const Category = req.app.locals.db.models.Category;
   const id = +req.params.id;
   Category.findByPk(id).then(result => {
@@ -54,14 +72,22 @@ router.get('/:id', (req, res, next) => {
   }).catch(next);
 });
 
-router.get('/:id/products', (req, res, next) => {
+router.get('/:id/products', routeValidator.validate({
+  params: {
+    id: { isRequired: true, isInt: { min: 1 } }
+  }
+}), (req, res, next) => {
   const Product = req.app.locals.db.models.Product;
   Product.findAll({ where: { categoryId: +req.params.id } })
     .then(result => res.json(result))
     .catch(next);
 });
 
-router.put('/:id', (req, res, next) => {
+router.put('/:id', routeValidator.validate({
+  params: {
+    id: { isRequired: true, isInt: { min: 1 } }
+  }
+}), (req, res, next) => {
   const category = req.body;
   // Ignore these fields
   delete category.id;
@@ -77,7 +103,11 @@ router.put('/:id', (req, res, next) => {
     .catch(next);
 });
 
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', routeValidator.validate({
+  params: {
+    id: { isRequired: true, isInt: { min: 1 } }
+  }
+}), (req, res, next) => {
   const Category = req.app.locals.db.models.Category;
   const id = +req.params.id;
   const where = { id };
