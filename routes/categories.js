@@ -39,6 +39,13 @@ router.get('/:id', (req, res, next) => {
   }).catch(next);
 });
 
+router.get('/:id/products', (req, res, next) => {
+  const Product = req.app.locals.db.models.Product;
+  Product.findAll({ where: { categoryId: +req.params.id } })
+    .then(result => res.json(result))
+    .catch(next);
+});
+
 router.put('/:id', (req, res, next) => {
   const category = req.body;
   // Ignore these fields

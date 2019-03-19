@@ -22,6 +22,17 @@ function givenProduct(categoryId) {
   };
 }
 
+function withoutKeys(object, keys) {
+  let newObject = {...object};
+  for (let key of keys)
+    delete newObject[key];
+  return newObject;
+}
+
+function withIgnoredTimestamp(object) {
+  return withoutKeys(object, ['createdAt', 'updatedAt']);
+}
+
 describe('Parallel requests', () => {
   it('get all (with multiple parallel requests)', done => {
     let count = 0;
@@ -52,6 +63,52 @@ describe('CRUD Category', () => {
     await request(app)
       .get(`/categories/${category.id}`)
       .expect(200);
+  });
+
+  it('get products', async () => {
+    // Creating categories
+    let category1 = givenCategory();
+    let response = await request(app)
+      .post('/categories')
+      .send(category1)
+      .expect(200);
+    category1 = response.body;
+    let category2 = givenCategory();
+    response = await request(app)
+      .post('/categories')
+      .send(category2)
+      .expect(200);
+    category2 = response.body;
+    // Creating products
+    let products1 = [];
+    let products2 = [];
+    for (let i = 0; i < 5; i++) {
+      let product = givenProduct(category1.id);
+      let response = await request(app)
+        .post('/products')
+        .send(product)
+        .expect(200);
+      product = response.body;
+      products1.push(withIgnoredTimestamp(product));
+    }
+    for (let i = 0; i < 4; i++) {
+      let product = givenProduct(category2.id);
+      let response = await request(app)
+        .post('/products')
+        .send(product)
+        .expect(200);
+      product = response.body;
+      products2.push(withIgnoredTimestamp(product));
+    }
+    // Retrieving categories' products
+    response = await request(app)
+      .get(`/categories/${category1.id}/products`)
+      .expect(200);
+    expect(response.body.map(withIgnoredTimestamp)).to.deep.equal(products1);
+    response = await request(app)
+      .get(`/categories/${category2.id}/products`)
+      .expect(200);
+    expect(response.body.map(withIgnoredTimestamp)).to.deep.equal(products2);
   });
 
   it('put', async () => {
