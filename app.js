@@ -9,6 +9,7 @@ const database = require('./database');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var categoriesRouter = require('./routes/categories');
+var productsRouter = require('./routes/products');
 
 var app = express();
 
@@ -30,6 +31,7 @@ app.use((req, res, next) => {
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/categories', categoriesRouter);
+app.use('/products', productsRouter);
 
 database().then(db => {
   app.locals.db = db;
