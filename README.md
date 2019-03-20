@@ -35,3 +35,7 @@ npm start
 ```bash
 docker build -t yourtag .
 ```
+
+## Deploy in Docker
+
+There is a [docker compose file example](docker-compose.yml) that you can use, modificating according to your demand.

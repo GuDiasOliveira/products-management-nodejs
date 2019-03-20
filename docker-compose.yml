@@ -1,0 +1,34 @@
+ # Example to deploy this aplication
+version: '2'
+services:
+  db:
+    container_name: mysql_products_management
+    image: mysql
+    restart: always
+    command: '--default-authentication-plugin=mysql_native_password'
+    expose:
+      - 33060
+    environment:
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_PASSWORD: myroot123
+      MYSQL_DATABASE: products_management
+      MYSQL_USER: prodman
+      MYSQL_PASSWORD: products123
+  products-management-nodejs:
+    container_name: products_management
+    image: yourtagname # Replace by yours
+    links:
+      - db
+    command:
+      - ./wait-for-it.sh
+      - 'mysql:33060'
+      - '--'
+      - npm
+      - start
+    environment:
+      DB_HOST: db
+      DB_USER: prodman
+      DB_PASSWORD: products123
+      DB_NAME: products_management
+    ports:
+      - '4000:3000' # This app will run at port 4000
